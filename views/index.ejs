@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Websiteスクレイパー</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/5.0.0-beta1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            padding-top: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1,
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center">Websiteスクレイパー</h1>
+
+        <h2>クロンスケジュールの設定</h2>
+        <form action="/set-schedule" method="POST" class="row g-3">
+            <div class="col-md-8">
+                <label for="schedule" class="form-label">クロンスケジュール:</label>
+                <input type="text" id="schedule" name="schedule" class="form-control" value="<%= schedule %>">
+            </div>
+            <div class="col-md-4 align-self-end">
+                <button type="submit" class="btn btn-primary w-100">更新</button>
+            </div>
+        </form>
+        <p>現在のスケジュール: <%= schedule %>
+        </p>
+
+        <h2>スクレイピングターゲットの管理</h2>
+        <form action="/add-target" method="POST" class="row g-3">
+            <div class="col-md-4">
+                <input type="text" name="websiteUrl" placeholder="ウェブサイトURL" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="targetTag" placeholder="ターゲットタグ" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <input type="text" name="type" placeholder="タイプ" class="form-control" required>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-success w-100">追加</button>
+            </div>
+        </form>
+
+        <ul class="list-group">
+            <% targets.forEach(function(target) { %>
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <form action="/update-target" method="POST" class="d-flex flex-fill">
+                        <input type="hidden" name="id" value="<%= target.id %>">
+                        <input type="text" name="websiteUrl" value="<%= target.websiteUrl %>" class="form-control me-2"
+                            required>
+                        <input type="text" name="targetTag" value="<%= target.targetTag %>" class="form-control me-2"
+                            required>
+                        <input type="text" name="type" value="<%= target.type %>" class="form-control me-2" required>
+                        <button type="submit" class="btn btn-warning me-2">更新</button>
+                    </form>
+                    <form action="/delete-target" method="POST">
+                        <input type="hidden" name="id" value="<%= target.id %>">
+                        <button type="submit" class="btn btn-danger">削除</button>
+                    </form>
+                </li>
+                <% }); %>
+        </ul>
+
+        <h2>スクレイピング結果</h2>
+        <ul class="list-group">
+            <% results.forEach(function(result) { %>
+                <li class="list-group-item">
+                    ターゲットID: <%= result.targetId %>, 値: <%= result.value %>, タイムスタンプ: <%= result.timestamp %>
+                </li>
+                <% }); %>
+        </ul>
+
+        <h2>使用方法</h2>
+        <p>このアプリケーションでは、ウェブサイトから特定の要素の数字のみをスクレイピングし、結果をデータベースに保存します。以下の手順で使用できます。</p>
+        <ol>
+            <li>クロンスケジュールを設定し、定期的なスクレイピングの間隔を指定します。</li>
+            <li>スクレイピングターゲットを追加し、ウェブサイトURL、ターゲットタグ、およびタイプを指定します。</li>
+            <li>ターゲットの情報を更新または削除することができます。</li>
+            <li>スクレイピング結果は、ターゲットID、スクレイピングされた値、およびタイムスタンプとともに表示されます。</li>
+        </ol>
+    </div>
+</body>
+
+</html>
